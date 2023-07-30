@@ -12,7 +12,7 @@ function Hero() {
     <>
       <div className="hero">
         <Image
-          className={`background-img2`}
+          className={`background-img`}
           src="/bg-img.jpg"
           layout="fill"
           objectFit="cover"
