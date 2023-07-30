@@ -53,10 +53,14 @@
   gap: 3em;
 }
 .main-launch-img {
+  position: relative;
   width: 270px;
   height: 270px;
   border-radius: 50%;
   border: 3px solid var(--text-color);
+}
+.main-launch-img img {
+  border-radius: 50%;
 }
 .upcoming {
   min-width: 350px;
@@ -255,9 +259,14 @@
 }
 .other-launch-img {
   width: 200px;
+  position: relative;
   height: 200px;
   border-radius: 50%;
   border: 3px solid var(--text-color);
+}
+
+.other-launch-img img {
+  border-radius: 50%;
 }
 
 @media (max-width: 768px) {

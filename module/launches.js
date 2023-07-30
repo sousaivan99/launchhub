@@ -8,6 +8,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import Confetti from "react-confetti";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";
+import Image from "next/image";
 
 // Custom hook to fetch upcoming launches from the API and handle loading state
 function useFetchUpcomingLaunches() {
@@ -109,7 +110,14 @@ function Launches() {
 
   return (
     <>
-      <img className={`background-img2`} src="/bg-img.jpg" />
+      <Image
+        className={`background-img2`}
+        src="/bg-img.jpg"
+        alt="Background image of a rocket launch"
+        layout="fill"
+        objectFit="cover"
+        priority
+      />
       {upcomingLaunchesToShow ? (
         upcomingLaunchesToShow.map((launch, index) => (
           <div
@@ -124,15 +132,21 @@ function Launches() {
           >
             {index === 0 && <h2>UPCOMING LAUNCH</h2>}
             <div className="upcoming-cont">
-              <img
-                src={
-                  !launch.mission_patches[0]
-                    ? launch.image
-                    : launch.mission_patches[0].image_url
-                }
-                alt={launch.name}
+              <div
                 className={index === 0 ? "main-launch-img" : "other-launch-img"}
-              />
+              >
+                <Image
+                  src={
+                    !launch.mission_patches[0]
+                      ? launch.image
+                      : launch.mission_patches[0].image_url
+                  }
+                  alt={launch.name}
+                  layout="fill"
+                  objectFit="cover"
+                  loading="eager"
+                />
+              </div>
               <div className="upcoming">
                 <div className="title-status-cont">
                   <div className="title-cont">
