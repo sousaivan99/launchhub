@@ -4,43 +4,53 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
+
+// SpaceX component fetches SpaceX data from the API and manages loading state.
+// It logs the data when it changes and sets the document title on mount.
+// It also provides a utility function to convert full country names to two-letter country codes.
 function SpaceX() {
   const [spacexInfo, setSpacexInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Effect to log spacexInfo when it changes
   useEffect(() => {
     if (spacexInfo !== null) {
       console.log(spacexInfo);
     }
   }, [spacexInfo]);
+
+  // Effect to set document title on component mount
   useEffect(() => {
-    // Update the page title with the countdown values
     document.title = "LaunchHUB";
   }, []);
 
+  // Fetches SpaceX data from the API and manages loading state
   useEffect(() => {
-    const fetchUpcomingLaunches = async () => {
+    const fetchSpacexData = async () => {
       try {
         const response = await axios.get("/api/fetchSpacex");
-        const data = response.data; // Data is already the upcoming launch object
+        const data = response.data;
         setSpacexInfo(data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching SpaceX Infos:", error);
+        setIsLoading(false);
       }
     };
 
-    fetchUpcomingLaunches();
+    fetchSpacexData();
   }, []);
 
+  // Maps full country names to two-letter country codes
   function getTwoLetterCountryCode(countryCode) {
     const countryCodesMap = {
       USA: "US",
-      // Add more country codes as needed
+      // add more to support more countries
     };
 
     return countryCodesMap[countryCode] || countryCode;
   }
+
   return (
     <>
       {isLoading ? (

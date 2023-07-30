@@ -6,7 +6,6 @@ import React, { useState, useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    // Update the page title with the countdown values
     document.title = "LaunchHUB";
   }, []);
   return (

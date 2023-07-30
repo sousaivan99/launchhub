@@ -9,39 +9,37 @@ import Confetti from "react-confetti";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 
-function Launches() {
-  const [upcomingLaunches, setUpcomingLaunches] = useState(null);
-  const [isConfettiActive, setIsConfettiActive] = useState(false);
-  const [hasDisplayedConfetti, setHasDisplayedConfetti] = useState(false);
+// Custom hook to fetch upcoming launches from the API and handle loading state
+function useFetchUpcomingLaunches() {
+  const [upcomingLaunches, setUpcomingLaunches] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    if (upcomingLaunches !== null) {
-      console.log(upcomingLaunches);
-    }
-  }, [upcomingLaunches]);
 
   useEffect(() => {
     const fetchUpcomingLaunches = async () => {
       try {
         const response = await axios.get("/api/upcoming-launches");
-        const data = response.data; // Data is already the upcoming launch object
+        const data = response.data;
         setUpcomingLaunches(data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching upcoming launches:", error);
+        setIsLoading(false);
       }
     };
 
     fetchUpcomingLaunches();
   }, []);
 
-  const upcomingLaunchesToShow = upcomingLaunches
-    ? upcomingLaunches.filter((launch) => launch.status.abbrev !== "Success")
-    : [];
+  return { upcomingLaunches, isLoading };
+}
+// Custom hook to trigger confetti when the first upcoming launch is imminent
+function useConfettiTrigger(upcomingLaunches) {
+  const [isConfettiActive, setIsConfettiActive] = useState(false);
+  const [hasDisplayedConfetti, setHasDisplayedConfetti] = useState(false);
 
   useEffect(() => {
-    if (!hasDisplayedConfetti && upcomingLaunchesToShow.length > 0) {
-      const firstLaunch = upcomingLaunchesToShow[0];
+    if (!hasDisplayedConfetti && upcomingLaunches.length > 0) {
+      const firstLaunch = upcomingLaunches[0];
       const targetTimestamp = new Date(firstLaunch.net).getTime();
 
       const updateCountdown = () => {
@@ -49,7 +47,6 @@ function Launches() {
         const timeDifference = targetTimestamp - now;
 
         if (timeDifference <= 0) {
-          // Countdown is over, display confetti if not already displayed
           setIsConfettiActive(true);
           setHasDisplayedConfetti(true);
         }
@@ -61,11 +58,10 @@ function Launches() {
         clearInterval(countdownInterval);
       };
     }
-  }, [upcomingLaunchesToShow, hasDisplayedConfetti]);
+  }, [upcomingLaunches, hasDisplayedConfetti]);
 
   useEffect(() => {
     if (isConfettiActive) {
-      // Play the confetti animation for 5 seconds and then reset the state
       const confettiTimeout = setTimeout(() => {
         setIsConfettiActive(false);
       }, 5000);
@@ -76,11 +72,25 @@ function Launches() {
     }
   }, [isConfettiActive]);
 
+  return { isConfettiActive };
+}
+
+// Uses custom hooks to fetch upcoming launches and handle confetti trigger
+// Filters upcoming launches to show only those with status not equal to "Success"
+// Renders loading spinner if data is still being loaded
+// Renders the rest of the component to display upcoming launches and confetti if necessary
+function Launches() {
+  const { upcomingLaunches, isLoading } = useFetchUpcomingLaunches();
+  const { isConfettiActive } = useConfettiTrigger(upcomingLaunches);
+
+  const upcomingLaunchesToShow = upcomingLaunches.filter(
+    (launch) => launch.status.abbrev !== "Success"
+  );
+
   if (isLoading) {
-    // Show "Loading..." message while waiting for the data to be fetched
     return (
       <>
-        <img className={`background-img2`} src="/bg-img.jpg" />
+        <img className="background-img2" src="/bg-img.jpg" />
         <div className="main-launch">
           <div className="lds-roller">
             <div></div>
@@ -104,7 +114,7 @@ function Launches() {
         upcomingLaunchesToShow.map((launch, index) => (
           <div
             key={launch.id}
-            className={index === 0 ? "main-launch" : "other-launch"} // Use hero2 for the first launch, hero3 for the rest
+            className={index === 0 ? "main-launch" : "other-launch"}
             data-index={index}
             style={
               index === 1

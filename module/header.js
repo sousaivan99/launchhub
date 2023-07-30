@@ -1,4 +1,5 @@
 "use client";
+// Header component
 import "@css/header.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
