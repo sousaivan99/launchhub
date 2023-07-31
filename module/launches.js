@@ -7,7 +7,6 @@ import "@css/launches.css";
 import "react-tooltip/dist/react-tooltip.css";
 import Confetti from "react-confetti";
 import { Tooltip } from "react-tooltip";
-import Link from "next/link";
 import Image from "next/image";
 
 // Custom hook to fetch upcoming launches from the API and handle loading state
@@ -165,7 +164,7 @@ function Launches() {
         content="Max amount of request you can do per hour"
         variant="info"
       />
-      {console.log(upcomingLaunches.results)}
+
       {upcomingLaunches.results.map((launch, index) => (
         <div
           key={launch.id}
@@ -217,10 +216,10 @@ function Launches() {
               <div className="mission_info">
                 {launch.mission === null
                   ? // If launch.mission is null, display an empty string
-                    ""
+                  ""
                   : launch.mission.description === null
-                  ? ""
-                  : launch.mission.description}
+                    ? ""
+                    : launch.mission.description}
                 <div className="orbit-Type-cont">
                   {launch.mission === null ? (
                     // If launch.mission is null, display an empty string
