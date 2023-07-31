@@ -165,7 +165,8 @@ function Launches() {
         content="Max amount of request you can do per hour"
         variant="info"
       />
-      {upcomingLaunches.map((launch, index) => (
+      {console.log(upcomingLaunches.results)}
+      {upcomingLaunches.results.map((launch, index) => (
         <div
           key={launch.id}
           className={index === 0 ? "main-launch" : "other-launch"}
