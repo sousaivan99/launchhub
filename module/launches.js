@@ -33,6 +33,26 @@ function useFetchUpcomingLaunches() {
 
   return { upcomingLaunches, isLoading };
 }
+
+function useFetchAPI() {
+  const [apiReq, setApiReq] = useState([]);
+
+  useEffect(() => {
+    const fetchAPI = async () => {
+      try {
+        const res = await axios.get("/api/fetchApi");
+        const data2 = res.data;
+        setApiReq(data2);
+      } catch (error) {
+        console.error("Error fetching API Requests:", error);
+      }
+    };
+
+    fetchAPI();
+  }, []);
+
+  return { apiReq };
+}
 // Custom hook to trigger confetti when the first upcoming launch is imminent
 function useConfettiTrigger(upcomingLaunches) {
   const [isConfettiActive, setIsConfettiActive] = useState(false);
@@ -77,17 +97,34 @@ function useConfettiTrigger(upcomingLaunches) {
 }
 
 // Uses custom hooks to fetch upcoming launches and handle confetti trigger
-// Filters upcoming launches to show only those with status not equal to "Success"
+// Filters upcoming launches to show only those with status not equal to "Success" and supported Launch service providers
 // Renders loading spinner if data is still being loaded
 // Renders the rest of the component to display upcoming launches and confetti if necessary
 function Launches() {
   const { upcomingLaunches, isLoading } = useFetchUpcomingLaunches();
+  const apiReq = useFetchAPI();
+  const [maxReached, setMaxReached] = useState(false);
   const { isConfettiActive } = useConfettiTrigger(upcomingLaunches);
 
-  const upcomingLaunchesToShow = upcomingLaunches.filter(
-    (launch) => launch.status.abbrev !== "Success"
-  );
+  useEffect(() => {
+    if (apiReq.apiReq.current_use >= 15) {
+      setMaxReached(true);
+    }
+  }, [apiReq.apiReq.current_use]);
 
+  if (maxReached) {
+    return (
+      <>
+        <img className="background-img2" src="/bg-img.jpg" />
+        <div className="max">
+          <span>
+            Max API Request reached next available request will be in{" "}
+            {apiReq.apiReq.next_use_secs} seconds
+          </span>
+        </div>
+      </>
+    );
+  }
   if (isLoading) {
     return (
       <>
@@ -118,86 +155,111 @@ function Launches() {
         objectFit="cover"
         priority
       />
-      {upcomingLaunchesToShow ? (
-        upcomingLaunchesToShow.map((launch, index) => (
-          <div
-            key={launch.id}
-            className={index === 0 ? "main-launch" : "other-launch"}
-            data-index={index}
-            style={
-              index === 1
-                ? { backgroundColor: "#0a0a0a", padding: "10px" }
-                : null
-            }
-          >
-            {index === 0 && <h2>UPCOMING LAUNCH</h2>}
-            <div className="upcoming-cont">
-              <div
-                className={index === 0 ? "main-launch-img" : "other-launch-img"}
-              >
-                <Image
-                  src={
-                    !launch.mission_patches[0]
-                      ? launch.image
-                      : launch.mission_patches[0].image_url
-                  }
-                  alt={launch.name}
-                  layout="fill"
-                  objectFit="cover"
-                  loading="eager"
-                />
-              </div>
-              <div className="upcoming">
-                <div className="title-status-cont">
-                  <div className="title-cont">
-                    <div className="title">
-                      {launch.name}
-                      <span className="agency">
-                        - {launch.launch_service_provider.name}
-                      </span>
-                    </div>
-                    <div className="launchpad">
-                      {launch.pad.location.name} - {launch.pad.name}
-                    </div>
-                  </div>
-                  <Tooltip
-                    id={launch.id}
-                    content={launch.status.name}
-                    variant="info"
-                  />
-                  <div data-tooltip-id={launch.id} className="status">
-                    {launch.status.abbrev}
-                  </div>
-                </div>
-                <div className="mission_info">
-                  {launch.mission.description}
-                  <div className="orbit-Type-cont">
-                    <span
-                      data-tooltip-id={`orbit-Type-${launch.id}`}
-                      className="orbit-Type"
-                    >
-                      {launch.mission.orbit.abbrev}
+      <div data-tooltip-id="api" className="api">
+        <span>
+          {apiReq.apiReq.current_use} / {apiReq.apiReq.your_request_limit}
+        </span>
+      </div>
+      <Tooltip
+        id="api"
+        content="Max amount of request you can do per hour"
+        variant="info"
+      />
+      {upcomingLaunches.map((launch, index) => (
+        <div
+          key={launch.id}
+          className={index === 0 ? "main-launch" : "other-launch"}
+          data-index={index}
+          style={
+            index === 1 ? { backgroundColor: "#0a0a0a", padding: "10px" } : null
+          }
+        >
+          {index === 0 && <h2>UPCOMING LAUNCH</h2>}
+          <div className="upcoming-cont">
+            <div
+              className={index === 0 ? "main-launch-img" : "other-launch-img"}
+            >
+              <Image
+                src={
+                  !launch.mission_patches[0]
+                    ? launch.image
+                    : launch.mission_patches[0].image_url
+                }
+                alt={launch.name}
+                layout="fill"
+                objectFit="cover"
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+            </div>
+            <div className="upcoming">
+              <div className="title-status-cont">
+                <div className="title-cont">
+                  <div className="title">
+                    {launch.name}
+                    <span className="agency">
+                      - {launch.launch_service_provider.name}
                     </span>
-                    <span className="orbit-Type">{launch.mission.type}</span>
                   </div>
-                  <Tooltip
-                    id={`orbit-Type-${launch.id}`}
-                    content={launch.mission.orbit.name}
-                    variant="info"
-                  />
+                  <div className="launchpad">
+                    {launch.pad.location.name} - {launch.pad.name}
+                  </div>
                 </div>
-                <div className="countdown">
-                  <Countdown targetTimestamp={launch.net} />
-                  {index === 0 && (
-                    <TitleCountDown targetTimestamp={launch.net} />
+                <Tooltip
+                  id={launch.id}
+                  content={launch.status.name}
+                  variant="info"
+                />
+                <div data-tooltip-id={launch.id} className="status">
+                  {launch.status.abbrev}
+                </div>
+              </div>
+              <div className="mission_info">
+                {launch.mission === null
+                  ? // If launch.mission is null, display an empty string
+                    ""
+                  : launch.mission.description === null
+                  ? ""
+                  : launch.mission.description}
+                <div className="orbit-Type-cont">
+                  {launch.mission === null ? (
+                    // If launch.mission is null, display an empty string
+                    ""
+                  ) : (
+                    // If launch.mission is not null, render the following elements
+                    <>
+                      <span
+                        data-tooltip-id={`orbit-Type-${launch.id}`}
+                        className="orbit-Type"
+                      >
+                        {launch.mission.orbit.abbrev}
+                      </span>
+                      <span className="orbit-Type">{launch.mission.type}</span>
+                      <Tooltip
+                        id={`orbit-Type-${launch.id}`}
+                        content={launch.mission.orbit.name}
+                        variant="info"
+                      />
+                    </>
                   )}
                 </div>
-                <div className="countdown-precision">
+              </div>
+              <div className="countdown">
+                <Countdown targetTimestamp={launch.net} />
+                {index === 0 && <TitleCountDown targetTimestamp={launch.net} />}
+              </div>
+              <div className="countdown-precision">
+                {launch.net_precision === null ? (
+                  // If launch.net_precision is null, display an empty string
+                  ""
+                ) : (
                   <span className="net-precision">
-                    {launch.net_precision.description}
+                    {launch.net_precision.description === null
+                      ? ""
+                      : launch.net_precision.description}
                   </span>
-                </div>
-                <div className="socials">
+                )}
+              </div>
+              {/* <div className="socials">
                   <Link href="https://www.youtube.com/spacex" target="_blank">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -246,26 +308,18 @@ function Launches() {
                     content="Instagram Profile"
                     variant="info"
                   />
-                </div>
-              </div>
+                </div> */}
             </div>
-            {index === 1 && (
-              <div className="seperator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            )}
           </div>
-        ))
-      ) : (
-        <>
-          <img className={`background-img2`} src="/bg-img.jpg" />
-          <div className="loading">
-            <h1>Loading...</h1>
-          </div>
-        </>
-      )}
+          {index === 1 && (
+            <div className="seperator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          )}
+        </div>
+      ))}
       {isConfettiActive && (
         <Confetti
           recycle={false}

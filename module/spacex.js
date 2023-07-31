@@ -5,12 +5,34 @@ import axios from "axios";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
 
+function useFetchAPI() {
+  const [apiReq, setApiReq] = useState([]);
+
+  useEffect(() => {
+    const fetchAPI = async () => {
+      try {
+        const res = await axios.get("/api/fetchApi");
+        const data2 = res.data;
+        setApiReq(data2);
+      } catch (error) {
+        console.error("Error fetching API Requests:", error);
+      }
+    };
+
+    fetchAPI();
+  }, []);
+
+  return { apiReq };
+}
+
 // SpaceX component fetches SpaceX data from the API and manages loading state.
 // It logs the data when it changes and sets the document title on mount.
 // It also provides a utility function to convert full country names to two-letter country codes.
 function SpaceX() {
   const [spacexInfo, setSpacexInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const apiReq = useFetchAPI();
+  const [maxReached, setMaxReached] = useState(false);
 
   // Effect to log spacexInfo when it changes
   // useEffect(() => {
@@ -49,6 +71,24 @@ function SpaceX() {
     };
 
     return countryCodesMap[countryCode] || countryCode;
+  }
+  useEffect(() => {
+    if (apiReq.apiReq.current_use >= 15) {
+      setMaxReached(true);
+    }
+  }, [apiReq.apiReq.current_use]);
+
+  if (maxReached) {
+    return (
+      <>
+        <div className="max">
+          <span>
+            Max API Request reached next available request will be in{" "}
+            {apiReq.apiReq.next_use_secs} seconds
+          </span>
+        </div>
+      </>
+    );
   }
 
   return (

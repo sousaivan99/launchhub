@@ -4,12 +4,12 @@ Features
 
 LaunchHUB offers a range of features to keep you updated and informed about SpaceX launches:
 
-Upcoming Launches: Get a comprehensive list of all the upcoming launches by SpaceX, including mission names, dates, and launch sites.
+Upcoming Launches: Get a comprehensive list of all the upcoming launches by SpaceX, including mission names, launch sites with the space launch Complex, description of the mission, Picture of the rocket or the Badge, Orbit Type(GTO, LEO, MEO etc) and if the launch is a GO, TBC(to be confirmed) or TBD(to be determined).
 
-Launch Details: Click on any specific launch to view more detailed information about the mission, its objectives, and any other relevant details.
+Countdown Timer: Never miss an exciting launch! The website provides a real-time countdown timer to keep you informed about the time left until the next launch on the Page and on the Tab of the website so you dont need to be on the page to see the countdown.
 
-Countdown Timer: Never miss an exciting launch! The website provides a real-time countdown timer to keep you informed about the time left until the next launch.
+Potential Features:
 
-Launch History: Explore the rich history of SpaceX's previous launches and learn about their achievements in the realm of space exploration.
+News articles
 
-Media Gallery: Access a collection of stunning images from NASA, showcasing the beauty and of space.
+Gallery of Space Pictures
