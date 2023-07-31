@@ -13,11 +13,11 @@ function SpaceX() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Effect to log spacexInfo when it changes
-  useEffect(() => {
-    if (spacexInfo !== null) {
-      console.log(spacexInfo);
-    }
-  }, [spacexInfo]);
+  // useEffect(() => {
+  //   if (spacexInfo !== null) {
+  //     console.log(spacexInfo);
+  //   }
+  // }, [spacexInfo]);
 
   // Effect to set document title on component mount
   useEffect(() => {

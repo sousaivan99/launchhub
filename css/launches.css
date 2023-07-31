@@ -107,6 +107,9 @@
   background-color: green;
   color: var(--text-color);
 }
+.status:hover {
+  cursor: default;
+}
 .launchpad {
   margin-top: 0.5em;
   font-size: 14px;
@@ -165,6 +168,9 @@
   margin-bottom: -10px;
   width: fit-content;
   padding: 5px 5px;
+}
+.orbit-Type:hover {
+  cursor: default;
 }
 .socials {
   display: flex;

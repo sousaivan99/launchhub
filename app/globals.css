@@ -3,6 +3,7 @@
   --bg-header-color: rgba(10, 10, 10, 0.1);
   --text-color: #fefefe;
   --sub-color: #b5b5b5;
+  --footer: #030303;
 
   --tags-color: #2c2c2c;
 
@@ -79,6 +80,9 @@ body {
   font-size: 15px;
   width: fit-content;
   padding: 5px 5px;
+}
+.tags span:hover {
+  cursor: default;
 }
 
 .lds-roller {
@@ -164,4 +168,12 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.footer {
+  background-color: var(--footer);
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

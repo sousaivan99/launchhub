@@ -14,6 +14,7 @@ function Hero() {
         <Image
           className={`background-img`}
           src="/bg-img.jpg"
+          alt="Background Image of a rocket"
           layout="fill"
           objectFit="cover"
           priority
